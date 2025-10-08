@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Page for Text to Speech Translation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 20px;
+            background-color: #e8ecef;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            text-align: center;
+        }
+        h2 {
+            color: #34495e;
+            margin: 20px 0 10px;
+            font-size: 1.6em;
+            text-align: center;
+        }
+        .description {
+            color: #555;
+            font-size: 1.1em;
+            max-width: 800px;
+            text-align: left;
+            line-height: 1.6;
+            margin: 20px 0 30px;
+        }
+        .description ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .description li {
+            margin-bottom: 8px;
+        }
+        .description strong {
+            color: #2c3e50;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 15px;
+        }
+        .toc {
+            width: 100%;
+            max-width: 300px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .toc h3 {
+            margin: 0 0 10px;
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .toc li {
+            margin-bottom: 8px;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #3498db;
+            font-size: 0.95em;
+            transition: color 0.3s;
+        }
+        .toc a:hover {
+            color: #2c3e50;
+        }
+        select {
+            padding: 12px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            margin: 15px 0;
+            width: 200px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            text-align: left;
+            font-size: 0.95em;
+            vertical-align: top;
+        }
+        th {
+            background-color: #3498db;
+            color: #fff;
+            font-weight: 500;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+        tr:hover td {
+            background-color: #f1f1f1;
+        }
+        .audio-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        audio {
+            width: 200px;
+            height: 40px;
+            display: block;
+        }
+        .text-container {
+            margin-top: 10px;
+        }
+        .text-label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin: 20px 0;
+        }
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            font-size: 1.1em;
+            margin: 20px 0;
+        }
+        @media (max-width: 768px) {
+            .toc {
+                max-width: 100%;
+            }
+            table {
+                font-size: 0.85em;
+            }
+            audio {
+                width: 100%;
+            }
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SAM-Translator</h1>
+         <p>
+            SAM-Translator is a proposed system that converts text in a source language
+            directly into speech in a target language.
+         </p>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#cvss-section">1. CVSS Dataset</a></li>
+                <li><a href="#covost2-section">2. CoVoST2 Dataset</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <p>This demo showcases randomly selected samples from the <strong>CVSS</strong> and <strong>CoVoST2</strong> datasets. You can explore the translations by selecting different languages from the dropdown.</p>
+            <ul>
+                <li><strong>Speech Translation: </strong>Speech is synthesized by our proposed <strong>SAM-Translator</strong>, and the text is transcribed using a pretrained ASR (Whisper) model.</li>
+                <li><strong>Speech Ground Truth: </strong>Speech and text are taken from the ground-truth dataset for reference.</li>
+            </ul>
+        </div>
+
+        <!-- CVSS Dataset -->
+        <div id="cvss-section">
+            <h2>CVSS Dataset</h2>
+            <label for="cvss-language">Select Language (CVSS):</label>
+            <select id="cvss-language" onchange="loadData('cvss')">
+                <option value="ar_AR">Arabic (ar_AR)</option>
+                <option value="de_DE">German (de_DE)</option>
+                <option value="en_XX">English (en_XX)</option>
+                <option value="es_XX">Spanish (es_XX)</option>
+                <option value="et_EE">Estonian (et_EE)</option>
+                <option value="fa_IR">Persian (fa_IR)</option>
+                <option value="fr_XX">French (fr_XX)</option>
+                <option value="gl_ES">Galician (gl_ES)</option>
+                <option value="id_ID">Indonesian (id_ID)</option>
+                <option value="it_IT">Italian (it_IT)</option>
+                <option value="ja_XX">Japanese (ja_XX)</option>
+                <option value="lv_LV">Latvian (lv_LV)</option>
+                <option value="mn_MN">Mongolian (mn_MN)</option>
+                <option value="nl_XX">Dutch (nl_XX)</option>
+                <option value="pt_XX">Portuguese (pt_XX)</option>
+                <option value="ru_RU">Russian (ru_RU)</option>
+                <option value="sl_SI">Slovenian (sl_SI)</option>
+                <option value="sv_SE">Swedish (sv_SE)</option>
+                <option value="ta_IN">Tamil (ta_IN)</option>
+                <option value="tr_TR">Turkish (tr_TR)</option>
+                <option value="zh_CN">Chinese (zh_CN)</option>
+            </select>
+
+            <div id="cvss-loading" class="loading">Loading CVSS data...</div>
+            <div id="cvss-error" class="error" style="display: none;"></div>
+            <table id="cvss-dataTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Index</th>
+                        <th>Input Text</th>
+                        <th>Speech Translation (SAM-Translator 10k)</th>
+                        <th>Speech Ground Truth</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- CoVoST2 Dataset -->
+        <div id="covost2-section">
+            <h2>CoVoST2 Dataset</h2>
+            <label for="covost2-language">Select Language (CoVoST2):</label>
+            <select id="covost2-language" onchange="loadData('covost2')">
+                <option value="ar_AR">Arabic (ar_AR)</option>
+                <option value="de_DE">German (de_DE)</option>
+                <option value="en_XX">English (en_XX)</option>
+                <option value="et_EE">Estonian (et_EE)</option>
+                <option value="fa_IR">Persian (fa_IR)</option>
+                <option value="gl_ES">Galician (gl_ES)</option>
+                <option value="id_ID">Indonesian (id_ID)</option>
+                <option value="ja_XX">Japanese (ja_XX)</option>
+                <option value="lv_LV">Latvian (lv_LV)</option>
+                <option value="mn_MN">Mongolian (mn_MN)</option>
+                <option value="sl_SI">Slovenian (sl_SI)</option>
+                <option value="sv_SE">Swedish (sv_SE)</option>
+                <option value="ta_IN">Tamil (ta_IN)</option>
+                <option value="tr_TR">Turkish (tr_TR)</option>
+                <option value="zh_CN">Chinese (zh_CN)</option>
+            </select>
+
+            <div id="covost2-loading" class="loading">Loading CoVoST2 data...</div>
+            <div id="covost2-error" class="error" style="display: none;"></div>
+            <table id="covost2-dataTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Index</th>
+                        <th>Input Text</th>
+                        <th>Speech Translation (SAM-Translator)</th>
+                        <th>Speech Ground Truth</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Mapping of language codes to file paths for CVSS and CoVoST2
+        const fileMap = {
+            cvss: {
+                'ar_AR': 'prediction_demopage_cvss/output_ar_AR.txt',
+                'de_DE': 'prediction_demopage_cvss/output_de_DE.txt',
+                'en_XX': 'prediction_demopage_cvss/output_en_XX.txt',
+                'es_XX': 'prediction_demopage_cvss/output_es_XX.txt',
+                'et_EE': 'prediction_demopage_cvss/output_et_EE.txt',
+                'fa_IR': 'prediction_demopage_cvss/output_fa_IR.txt',
+                'fr_XX': 'prediction_demopage_cvss/output_fr_XX.txt',
+                'gl_ES': 'prediction_demopage_cvss/output_gl_ES.txt',
+                'id_ID': 'prediction_demopage_cvss/output_id_ID.txt',
+                'it_IT': 'prediction_demopage_cvss/output_it_IT.txt',
+                'ja_XX': 'prediction_demopage_cvss/output_ja_XX.txt',
+                'lv_LV': 'prediction_demopage_cvss/output_lv_LV.txt',
+                'mn_MN': 'prediction_demopage_cvss/output_mn_MN.txt',
+                'nl_XX': 'prediction_demopage_cvss/output_nl_XX.txt',
+                'pt_XX': 'prediction_demopage_cvss/output_pt_XX.txt',
+                'ru_RU': 'prediction_demopage_cvss/output_ru_RU.txt',
+                'sl_SI': 'prediction_demopage_cvss/output_sl_SI.txt',
+                'sv_SE': 'prediction_demopage_cvss/output_sv_SE.txt',
+                'ta_IN': 'prediction_demopage_cvss/output_ta_IN.txt',
+                'tr_TR': 'prediction_demopage_cvss/output_tr_TR.txt',
+                'zh_CN': 'prediction_demopage_cvss/output_zh_CN.txt'
+            },
+            covost2: {
+                'ar_AR': 'prediction_demopage_covost2/output_ar_AR.txt',
+                'de_DE': 'prediction_demopage_covost2/output_de_DE.txt',
+                'en_XX': 'prediction_demopage_covost2/output_en_XX.txt',
+                'et_EE': 'prediction_demopage_covost2/output_et_EE.txt',
+                'fa_IR': 'prediction_demopage_covost2/output_fa_IR.txt',
+                'gl_ES': 'prediction_demopage_covost2/output_gl_ES.txt',
+                'id_ID': 'prediction_demopage_covost2/output_id_ID.txt',
+                'ja_XX': 'prediction_demopage_covost2/output_ja_XX.txt',
+                'lv_LV': 'prediction_demopage_covost2/output_lv_LV.txt',
+                'mn_MN': 'prediction_demopage_covost2/output_mn_MN.txt',
+                'sl_SI': 'prediction_demopage_covost2/output_sl_SI.txt',
+                'sv_SE': 'prediction_demopage_covost2/output_sv_SE.txt',
+                'ta_IN': 'prediction_demopage_covost2/output_ta_IN.txt',
+                'tr_TR': 'prediction_demopage_covost2/output_tr_TR.txt',
+                'zh_CN': 'prediction_demopage_covost2/output_zh_CN.txt'
+            }
+        };
+
+        async function loadData(dataset) {
+            const lang = document.getElementById(`${dataset}-language`).value;
+            const tbody = document.querySelector(`#${dataset}-dataTable tbody`);
+            const loadingDiv = document.getElementById(`${dataset}-loading`);
+            const errorDiv = document.getElementById(`${dataset}-error`);
+            const dataTable = document.getElementById(`${dataset}-dataTable`);
+
+            // Show loading, hide table and error
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            dataTable.style.display = 'none';
+            tbody.innerHTML = '';
+
+            try {
+                const response = await fetch(fileMap[dataset][lang]);
+                if (!response.ok) throw new Error(`Failed to load ${fileMap[dataset][lang]}`);
+
+                const text = await response.text();
+                const lines = text.trim().split('\n');
+
+                if (lines.length === 0) {
+                    throw new Error('No data found in the file.');
+                }
+
+                // Limit to 50 rows
+                lines.slice(0, 50).forEach((line, index) => {
+                    const [_, synthesisAudio, groundtruthAudio, original, machine, groundtruth, ...rest] = line.split('|');
+                    const row = document.createElement('tr');
+
+                    // Index
+                    const indexCell = document.createElement('td');
+                    indexCell.textContent = index + 1;
+                    row.appendChild(indexCell);
+
+                    // Input Text (C)
+                    const originalCell = document.createElement('td');
+                    originalCell.textContent = original || 'N/A';
+                    row.appendChild(originalCell);
+
+                    // Speech Translation (A, D)
+                    const machineCell = document.createElement('td');
+                    const synthesisAudioContainer = document.createElement('div');
+                    synthesisAudioContainer.className = 'audio-container';
+                    const synthesisAudioEl = document.createElement('audio');
+                    synthesisAudioEl.controls = true;
+                    synthesisAudioEl.onerror = () => {
+                        synthesisAudioContainer.textContent = 'Audio not available';
+                    };
+                    const synthesisSource = document.createElement('source');
+                    synthesisSource.src = `prediction_demopage_${dataset}/wav/${synthesisAudio}`;
+                    synthesisSource.type = 'audio/wav';
+                    synthesisAudioEl.appendChild(synthesisSource);
+                    synthesisAudioContainer.appendChild(synthesisAudioEl);
+                    machineCell.appendChild(synthesisAudioContainer);
+
+                    const machineText = document.createElement('div');
+                    machineText.className = 'text-container';
+                    const machineLabel = document.createElement('span');
+                    machineLabel.className = 'text-label';
+                    machineLabel.textContent = 'ASR: ';
+                    machineText.appendChild(machineLabel);
+                    machineText.appendChild(document.createTextNode(machine || 'N/A'));
+                    machineCell.appendChild(machineText);
+                    row.appendChild(machineCell);
+
+                    // Speech Ground Truth (B, E)
+                    const groundCell = document.createElement('td');
+                    const groundtruthAudioContainer = document.createElement('div');
+                    groundtruthAudioContainer.className = 'audio-container';
+                    const groundtruthAudioEl = document.createElement('audio');
+                    groundtruthAudioEl.controls = true;
+                    groundtruthAudioEl.onerror = () => {
+                        groundtruthAudioContainer.textContent = 'Audio not available';
+                    };
+                    const groundtruthSource = document.createElement('source');
+                    groundtruthSource.src = `prediction_demopage_${dataset}/wav/${groundtruthAudio}`;
+                    groundtruthSource.type = 'audio/wav';
+                    groundtruthAudioEl.appendChild(groundtruthSource);
+                    groundtruthAudioContainer.appendChild(groundtruthAudioEl);
+                    groundCell.appendChild(groundtruthAudioContainer);
+
+                    const groundText = document.createElement('div');
+                    groundText.className = 'text-container';
+                    const groundLabel = document.createElement('span');
+                    groundLabel.className = 'text-label';
+                    groundLabel.textContent = 'GT: ';
+                    groundText.appendChild(groundLabel);
+                    groundText.appendChild(document.createTextNode(groundtruth || 'N/A'));
+                    groundCell.appendChild(groundText);
+                    row.appendChild(groundCell);
+
+                    tbody.appendChild(row);
+                });
+
+                // Show table, hide loading
+                dataTable.style.display = 'table';
+                loadingDiv.style.display = 'none';
+            } catch (error) {
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        // Initial load for both datasets
+        loadData('cvss');
+        loadData('covost2');
+    </script>
+</body>
+</html>
