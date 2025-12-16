@@ -1,0 +1,10 @@
+# SAM Translator: **S**elf-Paced Learning **A**nd **M**ixture-of-Experts for Cross-Lingual Text-to-Speech Translation
+
+## Abstract
+>Most existing translation studies have concentrated on text-to-text or speech-to-text tasks, whereas text-to-speech translation (T2ST) remains relatively underexplored despite its crucial role in cultural integration and education. Among the few existing T2ST systems, recent end-to-end approaches still face significant challenges in modeling the linguistic and acoustic diversity across both high-resource and low-resource languages. To address these challenges, we propose SAM-Translator, a novel framework based on the mBART model that incorporates two key mechanisms: **S**elf-Paced Learning (SPL) **A**nd **M**ixture-of-Experts (MoE). SPL enhances training efficiency and stability by progressively introducing samples from easy to difficult based on training loss. Meanwhile, the MoE mechanism allows the model to dynamically select specialized experts for prediction, thereby improving adaptability to cross-lingual linguistic variation. Additionally, we tackle the low-resource language problem using a Data-Augmented Self-Training (DAST) approach, which generates synthetic parallel data from monolingual corpora to boost performance in data-scarce scenarios. Experimental results on the CVSS-C benchmark demonstrate that SAM-Translator achieves state-of-the-art performance, yielding relative BLEU improvements of 2–3\% for high-resource and 7–10\% for low-resource languages. Remarkably, DAST brings significant gains for Welsh and Mongolian, with relative BLEU improvements of 21.55\% and 25.83\%, respectively. Furthermore, evaluations on the large-scale CoVoST-2 dataset confirm the model’s robustness, with an additional 4–6\% improvement over the baseline. These results underscore the effectiveness of SAM-Translator in advancing multilingual T2ST.
+
+## DemoPage Link
+
+[Sam Translator Demo](https://tranquangchung.github.io/sam_translator/)
+
+## Source code will be updated soon
